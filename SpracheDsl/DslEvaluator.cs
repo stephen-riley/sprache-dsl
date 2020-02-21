@@ -11,10 +11,10 @@ namespace SpracheDsl
 
         public IDictionary<string, ResultValue> ParamBag { get; set; }
 
-        public ResultValue Eval(string dsl)
+        public FunctionInvocation Eval(string dsl)
         {
             var invocation = DslGrammar.Rule.Parse(dsl);
-            throw new NotImplementedException();
+            return invocation;
         }
     }
 }

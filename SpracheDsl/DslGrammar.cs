@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Sprache;
@@ -9,13 +8,13 @@ namespace SpracheDsl
     public static class DslGrammar
     {
         public static Parser<Argument> ID =
-            from id in Parse.AnyChar.AtLeastOnce().Token().Text()
+            from id in Parse.Letter.AtLeastOnce().Token().Text()
             select Argument.AsIdentifier(id);
 
         public static Parser<Argument> SYMBOL =
             from colon in Parse.Char(':')
             from id in ID
-            select id;
+            select Argument.AsSymbol(id.Id);
 
         public static Parser<Argument> VAR =
             from at in Parse.Char('@')
@@ -27,11 +26,24 @@ namespace SpracheDsl
             from value in Parse.DecimalInvariant
             select Argument.AsMoney(value);
 
+        public static Parser<Argument> PERCENT =
+            from value in Parse.DecimalInvariant
+            from percent in Parse.Char('%')
+            select Argument.AsPercent(value);
+
         public static Parser<Argument> Expression =
-            (ID
-            .Or(VAR)
+            VAR
             .Or(MONEY)
-            .Or(SYMBOL)).Token();
+            .Or(SYMBOL)
+            .Or(PERCENT)
+            .Or(
+                from id in ID
+                from openParen in Parse.Char('(')
+                from args in ArgumentList.Optional()
+                from closeParen in Parse.Char(')')
+                select Argument.AsFunctionCall(new FunctionInvocation { Name = id.Id, Args = args.IsDefined ? args.Get().ToList() : new List<Argument>() })
+            );
+        // .Or(FunctionCall);
 
         public static Parser<char> Comma =
             Parse.Char(',').Token();
@@ -42,16 +54,17 @@ namespace SpracheDsl
 
         public static Parser<IEnumerable<Argument>> ParameterList =
             from openParen in Parse.Char('(')
-            from args in ArgumentList
+            from args in ArgumentList.Optional()
             from closeParen in Parse.Char(')')
-            select args;
+            select args.IsDefined ? args.Get() : new List<Argument>();
 
-        public static Parser<FunctionInvocation> FunctionCall =
+        public static Parser<Argument> FunctionCall =
             from id in ID
             from args in ParameterList
-            select new FunctionInvocation { Name = id.Id, Args = args.ToList() };
+            select Argument.AsFunctionCall(new FunctionInvocation { Name = id.Id, Args = args.ToList() });
 
         public static readonly Parser<FunctionInvocation> Rule =
-            FunctionCall;
+            (from invocation in FunctionCall
+             select invocation.FuncInvocation).End();
     }
 }

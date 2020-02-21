@@ -11,6 +11,8 @@ namespace SpracheDsl.Types
 
         public decimal Value { get; private set; }
 
+        public FunctionInvocation FuncInvocation { get; private set; }
+
         public static Argument AsVariable(string id)
         {
             return new Argument { Type = Variable, Id = id };
@@ -36,10 +38,19 @@ namespace SpracheDsl.Types
             return new Argument { Type = Money, Value = Convert.ToDecimal(num) };
         }
 
+        public static Argument AsMoney(decimal num)
+        {
+            return new Argument { Type = Money, Value = num };
+        }
+
         public static Argument AsIdentifier(string id)
         {
             return new Argument { Type = Identifier, Id = id };
         }
 
+        public static Argument AsFunctionCall(FunctionInvocation invocation)
+        {
+            return new Argument { Type = FunctionCall, FuncInvocation = invocation };
+        }
     }
 }

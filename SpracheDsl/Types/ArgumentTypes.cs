@@ -19,5 +19,7 @@ namespace SpracheDsl.Types
         Number = 32,
 
         Percent = 64,
+
+        FunctionCall = 128,
     }
 }

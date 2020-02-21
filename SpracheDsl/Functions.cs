@@ -1,17 +1,25 @@
 using System;
+using SpracheDsl.Types;
 
 namespace SprachDsl
 {
     public class Functions
     {
+        public Line Line { get; private set; }
+
+        public Functions(Line line)
+        {
+            Line = line;
+        }
+
         public void RateFunction()
         {
             throw new NotImplementedException();
         }
 
-        public void CostBasisFunction()
+        public Argument CostBasisFunction()
         {
-            throw new NotImplementedException();
+            return Argument.AsMoney(Line.Quantity * Line.ItemPrice);
         }
     }
 }

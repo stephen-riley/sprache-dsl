@@ -1,8 +1,0 @@
-/Users/jsrs701/Projects/tmp/sprache-dsl/SpracheDsl/obj/Debug/netstandard2.0/SpracheDsl.csprojAssemblyReference.cache
-/Users/jsrs701/Projects/tmp/sprache-dsl/SpracheDsl/obj/Debug/netstandard2.0/SpracheDsl.AssemblyInfoInputs.cache
-/Users/jsrs701/Projects/tmp/sprache-dsl/SpracheDsl/obj/Debug/netstandard2.0/SpracheDsl.AssemblyInfo.cs
-/Users/jsrs701/Projects/tmp/sprache-dsl/SpracheDsl/bin/Debug/netstandard2.0/SpracheDsl.deps.json
-/Users/jsrs701/Projects/tmp/sprache-dsl/SpracheDsl/bin/Debug/netstandard2.0/SpracheDsl.dll
-/Users/jsrs701/Projects/tmp/sprache-dsl/SpracheDsl/bin/Debug/netstandard2.0/SpracheDsl.pdb
-/Users/jsrs701/Projects/tmp/sprache-dsl/SpracheDsl/obj/Debug/netstandard2.0/SpracheDsl.dll
-/Users/jsrs701/Projects/tmp/sprache-dsl/SpracheDsl/obj/Debug/netstandard2.0/SpracheDsl.pdb

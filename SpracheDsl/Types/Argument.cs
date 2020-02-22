@@ -94,5 +94,18 @@ namespace SpracheDsl.Types
         {
             return new Argument { Type = ArgumentTypes.Dsl, Dsl = dsl };
         }
+
+        public override string ToString()
+        {
+            return Type switch
+            {
+                Bool => Value == 0 ? "False" : "True",
+                Symbol => $":{Id}",
+                Variable => $"@{Id}",
+                Number => Value.ToString(),
+                Money => $"${Value}",
+                _ => throw new ArgumentException($"can't convert type {Type.ToString()} to string")
+            };
+        }
     }
 }

@@ -5,7 +5,7 @@ using SpracheDsl.Types;
 
 namespace SpracheDsl
 {
-    public static class DslGrammar
+    public class DslGrammar
     {
         public static Parser<Argument> ID =
             from id in Parse.Regex(@"[A-Za-z_\-0-9]+").Token().Text()
@@ -39,13 +39,16 @@ namespace SpracheDsl
             from value in Parse.String("INF").Token()
             select Argument.AsNumber(decimal.MaxValue);
 
-        public static Parser<Argument> Expression =
+        public static Parser<Argument> Atom =
             VAR
             .Or(MONEY)
             .Or(SYMBOL)
             .Or(PERCENT)
             .Or(NUMBER)
-            .Or(INF)
+            .Or(INF);
+
+        public static Parser<Argument> Expression =
+            Atom
             .Or(
                 from id in ID
                 from openParen in Parse.Char('(').Token()
@@ -64,5 +67,17 @@ namespace SpracheDsl
         public static readonly Parser<FunctionInvocation> Rule =
             (from invocation in Expression
              select invocation.FuncInvocation).End();
+
+        public static Parser<DslAttribute> Attr =
+            from openBracket in Parse.Char('[').Token()
+            from id in ID
+            from eq in Parse.Char('=').Token()
+            from atoms in Atom.DelimitedBy(Comma)
+            select new DslAttribute(id.Id, atoms);
+
+        public static Parser<IEnumerable<DslAttribute>> AttrList =
+            from leading in Parse.CharExcept('[').Many()
+            from attrs in Attr.DelimitedBy(Parse.CharExcept('[')).Optional()
+            select attrs.IsDefined ? attrs.Get() : new List<DslAttribute>();
     }
 }

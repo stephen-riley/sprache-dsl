@@ -9,7 +9,9 @@ namespace SpracheDsl
 {
     public class DslEvaluator
     {
-        static IDictionary<int, Argument> Cache = new Dictionary<int, Argument>();
+        static IDictionary<int, Argument> DslCache = new Dictionary<int, Argument>();
+
+        static IDictionary<int, IList<DslAttribute>> AttrCache = new Dictionary<int, IList<DslAttribute>>();
 
         public Line Line { get; set; }
 
@@ -28,14 +30,32 @@ namespace SpracheDsl
         public ResultValue Eval(string dsl, bool forceReparse = false)
         {
             var hash = dsl.GetHashCode();
+            EvalInternal(dsl, hash, forceReparse);
 
-            if (forceReparse || !Cache.ContainsKey(hash))
+            return Reduce(new ExecContext { Line = Line, ParamBag = ParamBag }, DslCache[hash]).ToResultValue();
+        }
+
+        public IList<DslAttribute> Attributes(string dsl, bool forceReparse = false)
+        {
+            var hash = dsl.GetHashCode();
+            EvalInternal(dsl, hash, forceReparse);
+
+            return AttrCache[hash];
+        }
+
+        private void EvalInternal(string dsl, int hash, bool forceReparse = false)
+        {
+            if (forceReparse || !DslCache.ContainsKey(hash))
             {
-                var invocation = DslGrammar.Rule.Parse(StripComments(dsl));
-                Cache[hash] = Argument.AsFunctionCall(invocation);
-            }
+                var stripped = StripComments(dsl);
 
-            return Reduce(new ExecContext { Line = Line, ParamBag = ParamBag }, Cache[hash]).ToResultValue();
+                var attrs = DslGrammar.AttrList.Parse(stripped);
+                attrs = ReduceAttributes(attrs);
+
+                var invocation = DslGrammar.Rule.Parse(StripAttributes(stripped));
+                DslCache[hash] = Argument.AsFunctionCall(invocation);
+                AttrCache[hash] = attrs.ToList();
+            }
         }
 
         public static Argument Reduce(ExecContext context, Argument arg)
@@ -68,10 +88,36 @@ namespace SpracheDsl
             return arg;
         }
 
+        private IEnumerable<DslAttribute> ReduceAttributes(IEnumerable<DslAttribute> attrs)
+        {
+            var map = new Dictionary<string, DslAttribute>();
+
+            foreach (var attr in attrs)
+            {
+                if (map.ContainsKey(attr.Name))
+                {
+                    map[attr.Name].Values.Add(attr.Values.First());
+                }
+                else
+                {
+                    map[attr.Name] = attr;
+                }
+            }
+
+            return map.Values;
+        }
+
         private string StripComments(string dsl)
         {
             dsl = Regex.Replace(dsl, @"//.*$", "", RegexOptions.Multiline);
             dsl = Regex.Replace(dsl, @"/\*.*?\*/", "");
+
+            return dsl;
+        }
+
+        private string StripAttributes(string dsl)
+        {
+            dsl = Regex.Replace(dsl, @"\[.*?\]", "");
 
             return dsl;
         }

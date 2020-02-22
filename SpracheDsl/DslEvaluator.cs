@@ -15,6 +15,16 @@ namespace SpracheDsl
 
         public IDictionary<string, ResultValue> ParamBag { get; set; }
 
+        public DslEvaluator()
+        {
+        }
+
+        public DslEvaluator(ExecContext context)
+        {
+            Line = context.Line;
+            ParamBag = context.ParamBag;
+        }
+
         public ResultValue Eval(string dsl, bool forceReparse = false)
         {
             var hash = dsl.GetHashCode();
@@ -48,6 +58,11 @@ namespace SpracheDsl
                 {
                     throw new ArgumentException($"no variable @{arg.Id} in ParamBag");
                 }
+            }
+            else if (arg.Type == ArgumentTypes.Dsl)
+            {
+                var result = new DslEvaluator(context).Eval(arg.Dsl);
+                return result.ToArgument();
             }
 
             return arg;

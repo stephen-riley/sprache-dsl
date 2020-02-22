@@ -23,5 +23,7 @@ namespace SpracheDsl.Types
         FunctionCall = 128,
 
         Bool = 256,
+
+        Dsl = 512,
     }
 }

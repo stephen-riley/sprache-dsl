@@ -7,18 +7,20 @@ namespace SpracheDsl.Types
 
     public static class ArgumentExtensions
     {
-        public static void AssertType(this Argument arg, ArgumentTypes type)
+        public static Argument AssertType(this Argument arg, ArgumentTypes type)
         {
             if (arg.Type != type)
             {
                 throw new ArgumentException($"type was not correct (expected {type.ToString()})", nameof(arg));
             }
+
+            return arg;
         }
 
-        public static void AssertPercent(this Argument arg) => AssertType(arg, Percent);
-        public static void AssertMoney(this Argument arg) => AssertType(arg, Money);
-        public static void AssertVariable(this Argument arg) => AssertType(arg, Variable);
-        public static void AssertSymbol(this Argument arg) => AssertType(arg, Symbol);
+        public static Argument AssertPercent(this Argument arg) => AssertType(arg, Percent);
+        public static Argument AssertMoney(this Argument arg) => AssertType(arg, Money);
+        public static Argument AssertVariable(this Argument arg) => AssertType(arg, Variable);
+        public static Argument AssertSymbol(this Argument arg) => AssertType(arg, Symbol);
 
         public static bool IsType(this Argument arg, ArgumentTypes type) => arg.Type == type;
 

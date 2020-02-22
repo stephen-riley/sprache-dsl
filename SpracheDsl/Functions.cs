@@ -17,15 +17,36 @@ namespace SpracheDsl
                 "unitbasis" => Functions.UnitBasis(context, invocation.Args.ToArray()),
                 "unitband" => Functions.UnitBand(context, invocation.Args.ToArray()),
                 "fee" => Functions.Fee(context, invocation.Args.ToArray()),
+                "dollars" => Functions.Dollars(context, invocation.Args.ToArray()),
+                "cents" => Functions.Cents(context, invocation.Args.ToArray()),
+                "bandedfee" => Functions.BandedFee(context, invocation.Args.ToArray()),
+                "sumtax" => Functions.SumTax(context, invocation.Args.ToArray()),
+                "roundmoney" => Functions.RoundMoney(context, invocation.Args.ToArray()),
                 _ => throw new ArgumentException($"function {invocation.Name} invalid"),
             };
 
             return result;
         }
 
+        private static void AssertArgCount(Argument[] args, int expectedCount)
+        {
+            if (args.Length != expectedCount)
+            {
+                throw new ArgumentException($"{nameof(args)} must have {expectedCount} items");
+            }
+        }
+
         public static Argument Rate(ExecContext context, params Argument[] args)
         {
+            AssertArgCount(args, 2);
+
             var rate = DslEvaluator.Reduce(context, args[0]);
+
+            if (rate.IsMoney())
+            {
+                return rate;
+            }
+
             var costBasis = DslEvaluator.Reduce(context, args[1]);
 
             rate.AssertPercent();
@@ -49,7 +70,8 @@ namespace SpracheDsl
                 var key = $"DEFAULT_RATE:{code.Id}";
                 if (context.ParamBag.ContainsKey(key))
                 {
-                    return Argument.AsPercent(context.ParamBag[key].Value);
+                    var result = DslEvaluator.Reduce(context, context.ParamBag[key].ToArgument());
+                    return result;
                 }
             }
 
@@ -62,12 +84,16 @@ namespace SpracheDsl
 
         public static Argument Exclusive(ExecContext context, params Argument[] args)
         {
+            int argIndex = 0;
             // take the first non-zero result from the argument terms
             foreach (var arg in args)
             {
+                argIndex++;
+
                 var reduced = DslEvaluator.Reduce(context, arg);
                 if (reduced.Type == ArgumentTypes.Money && reduced.Value > 0m)
                 {
+                    Console.WriteLine($"*** Exclusive: selected arg {argIndex}");
                     return reduced;
                 }
             }
@@ -85,10 +111,7 @@ namespace SpracheDsl
 
         public static Argument UnitBand(ExecContext context, params Argument[] args)
         {
-            if (args.Length != 3)
-            {
-                throw new ArgumentException($"{nameof(args)} must have three items");
-            }
+            AssertArgCount(args, 3);
 
             var low = DslEvaluator.Reduce(context, args[0]);
             var high = DslEvaluator.Reduce(context, args[1]);
@@ -99,15 +122,72 @@ namespace SpracheDsl
 
         public static Argument Fee(ExecContext context, params Argument[] args)
         {
-            if (args.Length != 2)
-            {
-                throw new ArgumentException($"{nameof(args)} must have two items");
-            }
+            AssertArgCount(args, 2);
 
             var fee = DslEvaluator.Reduce(context, args[0]);
             var truthy = DslEvaluator.Reduce(context, args[1]);
 
             return Argument.AsMoney(truthy.Value != 0m ? fee.Value : 0m);
+        }
+
+        public static Argument Dollars(ExecContext context, params Argument[] args)
+        {
+            AssertArgCount(args, 1);
+
+            var value = DslEvaluator.Reduce(context, args[0]);
+
+            return Argument.AsMoney(Math.Floor(value.Value));
+        }
+
+        public static Argument Cents(ExecContext context, params Argument[] args)
+        {
+            AssertArgCount(args, 1);
+
+            var value = DslEvaluator.Reduce(context, args[0]);
+            var truncatedValue = value.Value - Math.Truncate(value.Value);
+
+            return Argument.AsMoney(truncatedValue);
+        }
+
+        public static Argument BandedFee(ExecContext context, params Argument[] args)
+        {
+            AssertArgCount(args, 4);
+
+            var low = DslEvaluator.Reduce(context, args[0]).Value;
+            var high = DslEvaluator.Reduce(context, args[1]).Value;
+            var operand = DslEvaluator.Reduce(context, args[2]).Value;
+
+            if (operand >= low && operand < high)
+            {
+                return DslEvaluator.Reduce(context, args[3]).AssertMoney();
+            }
+            else
+            {
+                return Argument.AsMoney(0m);
+            }
+        }
+
+        public static Argument SumTax(ExecContext context, params Argument[] args)
+        {
+            var total = 0m;
+
+            // take the first non-zero result from the argument terms
+            foreach (var arg in args)
+            {
+                var reduced = DslEvaluator.Reduce(context, arg);
+                total += reduced.Value;
+            }
+
+            return Argument.AsMoney(total);
+        }
+
+        public static Argument RoundMoney(ExecContext context, params Argument[] args)
+        {
+            AssertArgCount(args, 1);
+
+            var value = DslEvaluator.Reduce(context, args[0]);
+
+            return Argument.AsMoney(Math.Round(value.Value, 2));
         }
     }
 }

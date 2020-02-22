@@ -11,6 +11,8 @@ namespace SpracheDsl.Types
 
         public decimal Value { get; private set; }
 
+        public string Dsl { get; private set; }
+
         public FunctionInvocation FuncInvocation { get; private set; }
 
         public static Argument AsVariable(string id)
@@ -86,6 +88,11 @@ namespace SpracheDsl.Types
         public static Argument False()
         {
             return Argument.AsBoolean(false);
+        }
+
+        public static Argument AsDsl(string dsl)
+        {
+            return new Argument { Type = ArgumentTypes.Dsl, Dsl = dsl };
         }
     }
 }

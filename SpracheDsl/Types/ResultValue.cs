@@ -28,14 +28,12 @@ namespace SpracheDsl.Types
             Unit = ResultTypes.Undefined;
         }
 
-        public ResultValue(ResultTypes type)
-: this()
+        public ResultValue(ResultTypes type) : this()
         {
             Unit = type;
         }
 
-        public ResultValue(ResultTypes type, decimal value)
-: this(type)
+        public ResultValue(ResultTypes type, decimal value) : this(type)
         {
             Value = value;
         }

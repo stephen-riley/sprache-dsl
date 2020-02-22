@@ -10,6 +10,7 @@ namespace SpracheDsl.Types
             {
                 ResultTypes.Money => Argument.AsMoney(resultValue.Value),
                 ResultTypes.Percent => Argument.AsPercent(resultValue.Value),
+                ResultTypes.Dsl => Argument.AsDsl(resultValue.DslCode),
                 _ => throw new ArgumentException($"cannot convert ResultValue of type {resultValue.Unit.ToString()}")
             };
         }

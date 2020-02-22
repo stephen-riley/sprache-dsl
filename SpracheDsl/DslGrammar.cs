@@ -8,7 +8,7 @@ namespace SpracheDsl
     public static class DslGrammar
     {
         public static Parser<Argument> ID =
-            from id in Parse.Letter.AtLeastOnce().Token().Text()
+            from id in Parse.Regex(@"[A-Za-z_\-0-9]+").Token().Text()
             select Argument.AsIdentifier(id);
 
         public static Parser<Argument> SYMBOL =
@@ -19,7 +19,7 @@ namespace SpracheDsl
         public static Parser<Argument> VAR =
             from at in Parse.Char('@')
             from id in ID
-            select id;
+            select Argument.AsVariable(id.Id);
 
         public static Parser<Argument> MONEY =
             from dollar in Parse.Char('$')
@@ -31,16 +31,26 @@ namespace SpracheDsl
             from percent in Parse.Char('%')
             select Argument.AsPercent(value);
 
+        public static Parser<Argument> NUMBER =
+            from value in Parse.DecimalInvariant
+            select Argument.AsNumber(value);
+
+        public static Parser<Argument> INF =
+            from value in Parse.String("INF").Token()
+            select Argument.AsNumber(decimal.MaxValue);
+
         public static Parser<Argument> Expression =
             VAR
             .Or(MONEY)
             .Or(SYMBOL)
             .Or(PERCENT)
+            .Or(NUMBER)
+            .Or(INF)
             .Or(
                 from id in ID
-                from openParen in Parse.Char('(')
+                from openParen in Parse.Char('(').Token()
                 from args in ArgumentList.Optional()
-                from closeParen in Parse.Char(')')
+                from closeParen in Parse.Char(')').Token()
                 select Argument.AsFunctionCall(new FunctionInvocation { Name = id.Id, Args = args.IsDefined ? args.Get().ToList() : new List<Argument>() })
             );
 

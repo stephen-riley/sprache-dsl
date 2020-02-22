@@ -21,5 +21,7 @@ namespace SpracheDsl.Types
         Percent = 64,
 
         FunctionCall = 128,
+
+        Bool = 256,
     }
 }

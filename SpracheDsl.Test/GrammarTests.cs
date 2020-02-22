@@ -29,8 +29,8 @@ namespace SpracheDsl.Test
         public void TestExpressionSYMBOL()
         {
             var interpreter = new DslEvaluator();
-            var result = DslGrammar.Expression.Parse(":symbol");
-            Assert.AreEqual("symbol", result.Id);
+            var result = DslGrammar.Expression.Parse(":Symbol-With-Stuff-In_It");
+            Assert.AreEqual("Symbol-With-Stuff-In_It", result.Id);
             Assert.AreEqual(ArgumentTypes.Symbol, result.Type);
         }
 

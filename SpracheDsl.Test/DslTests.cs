@@ -1,6 +1,5 @@
 ﻿
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SprachDsl;
 using SpracheDsl.Types;
 using System.Collections.Generic;
 
@@ -21,6 +20,14 @@ namespace SpracheDsl.Test
         {
             var interpreter = new DslEvaluator() { Line = line };
             var result = interpreter.Eval("rate( 6.5%, costbasis() )");
+            Assert.AreEqual(ResultValue.Money(6.50m), result);
+        }
+
+        [TestMethod]
+        public void CanRunSimpleDsl02()
+        {
+            var interpreter = new DslEvaluator() { Line = line };
+            var result = interpreter.Eval("rate( defaultrate(), costbasis() )");
             Assert.AreEqual(ResultValue.Money(6.50m), result);
         }
 
@@ -61,7 +68,9 @@ namespace SpracheDsl.Test
             };
             var result = interpreter.Eval(@"
                 rate( 
-                    @var1,                              costbasis()                     )
+                    @var1,          // Look up from paramBag
+                    costbasis()     // From the line item
+                )
                 ");
 
             Assert.AreEqual(ResultValue.Money(50.00m), result);

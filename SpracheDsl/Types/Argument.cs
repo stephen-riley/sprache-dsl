@@ -33,6 +33,11 @@ namespace SpracheDsl.Types
             return new Argument { Type = Percent, Value = Convert.ToDecimal(num) / 100m };
         }
 
+        public static Argument AsPercent(decimal num)
+        {
+            return new Argument { Type = Percent, Value = num };
+        }
+
         public static Argument AsMoney(string num)
         {
             return new Argument { Type = Money, Value = Convert.ToDecimal(num) };
@@ -51,6 +56,36 @@ namespace SpracheDsl.Types
         public static Argument AsFunctionCall(FunctionInvocation invocation)
         {
             return new Argument { Type = FunctionCall, FuncInvocation = invocation };
+        }
+
+        public static Argument AsBoolean(int b)
+        {
+            return new Argument { Type = Bool, Value = b };
+        }
+
+        public static Argument AsBoolean(bool b)
+        {
+            return new Argument { Type = Bool, Value = b ? 1 : 0 };
+        }
+
+        public static Argument AsNumber(string n)
+        {
+            return new Argument { Type = Number, Value = Convert.ToDecimal(n) };
+        }
+
+        public static Argument AsNumber(decimal n)
+        {
+            return new Argument { Type = Number, Value = n };
+        }
+
+        public static Argument True()
+        {
+            return Argument.AsBoolean(true);
+        }
+
+        public static Argument False()
+        {
+            return Argument.AsBoolean(false);
         }
     }
 }

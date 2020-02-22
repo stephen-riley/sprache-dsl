@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpracheDsl", "SpracheDsl\Sp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpracheDsl.Test", "SpracheDsl.Test\SpracheDsl.Test.csproj", "{88ACA1C3-869E-423D-B00B-8FFFDF6990B9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpracheDsl.Benchmark", "SpracheDsl.Benchmark\SpracheDsl.Benchmark.csproj", "{CE83AE04-DFB7-4978-A235-1FEC38404876}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,5 +46,17 @@ Global
 		{88ACA1C3-869E-423D-B00B-8FFFDF6990B9}.Release|x64.Build.0 = Release|Any CPU
 		{88ACA1C3-869E-423D-B00B-8FFFDF6990B9}.Release|x86.ActiveCfg = Release|Any CPU
 		{88ACA1C3-869E-423D-B00B-8FFFDF6990B9}.Release|x86.Build.0 = Release|Any CPU
+		{CE83AE04-DFB7-4978-A235-1FEC38404876}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE83AE04-DFB7-4978-A235-1FEC38404876}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE83AE04-DFB7-4978-A235-1FEC38404876}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{CE83AE04-DFB7-4978-A235-1FEC38404876}.Debug|x64.Build.0 = Debug|Any CPU
+		{CE83AE04-DFB7-4978-A235-1FEC38404876}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CE83AE04-DFB7-4978-A235-1FEC38404876}.Debug|x86.Build.0 = Debug|Any CPU
+		{CE83AE04-DFB7-4978-A235-1FEC38404876}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE83AE04-DFB7-4978-A235-1FEC38404876}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE83AE04-DFB7-4978-A235-1FEC38404876}.Release|x64.ActiveCfg = Release|Any CPU
+		{CE83AE04-DFB7-4978-A235-1FEC38404876}.Release|x64.Build.0 = Release|Any CPU
+		{CE83AE04-DFB7-4978-A235-1FEC38404876}.Release|x86.ActiveCfg = Release|Any CPU
+		{CE83AE04-DFB7-4978-A235-1FEC38404876}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

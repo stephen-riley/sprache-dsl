@@ -15,11 +15,11 @@ namespace SpracheDsl
 
         public IDictionary<string, ResultValue> ParamBag { get; set; }
 
-        public ResultValue Eval(string dsl)
+        public ResultValue Eval(string dsl, bool forceReparse = false)
         {
             var hash = dsl.GetHashCode();
 
-            if (!Cache.ContainsKey(hash))
+            if (forceReparse || !Cache.ContainsKey(hash))
             {
                 var invocation = DslGrammar.Rule.Parse(StripComments(dsl));
                 Cache[hash] = Argument.AsFunctionCall(invocation);

@@ -7,11 +7,11 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.4.0" />
-    <!-- <PackageReference Include="Sprache" Version="2.2.0" /> -->
+    <PackageReference Include="Sprache" Version="2.2.0" />
   </ItemGroup>
 
-  <ItemGroup>
+  <!-- <ItemGroup>
     <ProjectReference Include="..\..\Sprache\src\Sprache\Sprache.csproj" />
-  </ItemGroup>
+  </ItemGroup> -->
 
 </Project>

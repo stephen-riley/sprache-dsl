@@ -17,6 +17,16 @@ namespace SpracheDsl.Types
             return arg;
         }
 
+        public static Argument AssertNumeric(this Argument arg)
+        {
+            if (arg.Type != Percent && arg.Type != Money && arg.Type != Number)
+            {
+                throw new ArgumentException($"type was not correct (expected {arg.Type.ToString()})", nameof(arg));
+            }
+
+            return arg;
+        }
+
         public static Argument AssertPercent(this Argument arg) => AssertType(arg, Percent);
         public static Argument AssertMoney(this Argument arg) => AssertType(arg, Money);
         public static Argument AssertVariable(this Argument arg) => AssertType(arg, Variable);
@@ -36,6 +46,7 @@ namespace SpracheDsl.Types
             {
                 [Percent] = ResultTypes.Percent,
                 [Money] = ResultTypes.Money,
+                [Dimensionless] = ResultTypes.Dimensionless,
             };
 
             if (!typeMap.ContainsKey(arg.Type))

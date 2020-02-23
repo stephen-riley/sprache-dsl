@@ -22,6 +22,11 @@ namespace SpracheDsl
                 "bandedfee" => Functions.BandedFee(context, invocation.Args.ToArray()),
                 "sumtax" => Functions.SumTax(context, invocation.Args.ToArray()),
                 "roundmoney" => Functions.RoundMoney(context, invocation.Args.ToArray()),
+                "bandedamount" => Functions.BandedAmount(context, invocation.Args.ToArray()),
+                "amountinband" => Functions.AmountInBand(context, invocation.Args.ToArray()),
+                "discount" => Functions.Discount(context, invocation.Args.ToArray()),
+                "setcostbasis" => Functions.SetCostBasis(context, invocation.Args.ToArray()),
+                "juristypematch" => Functions.JurisTypeMatch(context, invocation.Args.ToArray()),
                 _ => throw new ArgumentException($"function {invocation.Name} invalid"),
             };
 
@@ -188,6 +193,96 @@ namespace SpracheDsl
             var value = DslEvaluator.Reduce(context, args[0]);
 
             return Argument.AsMoney(Math.Round(value.Value, 2));
+        }
+
+        public static Argument BandedAmount(ExecContext context, params Argument[] args)
+        {
+            AssertArgCount(args, 3);
+
+            var low = DslEvaluator.Reduce(context, args[0]).AssertNumeric();
+            var high = DslEvaluator.Reduce(context, args[1]).AssertNumeric();
+            var operand = DslEvaluator.Reduce(context, args[2]).AssertNumeric();
+
+            var result = 0m;
+
+            if (operand.Value >= high.Value)
+            {
+                result = high.Value;
+            }
+            else if (operand.Value >= low.Value)
+            {
+                result = operand.Value;
+            }
+
+            return new Argument(operand.Type, value: result);
+        }
+
+        public static Argument AmountInBand(ExecContext context, params Argument[] args)
+        {
+            AssertArgCount(args, 3);
+
+            var low = DslEvaluator.Reduce(context, args[0]).AssertNumeric();
+            var high = DslEvaluator.Reduce(context, args[1]).AssertNumeric();
+            var operand = DslEvaluator.Reduce(context, args[2]).AssertNumeric();
+
+            var result = 0m;
+
+            if (operand.Value >= high.Value)
+            {
+                result = high.Value - low.Value;
+            }
+            else if (operand.Value >= low.Value)
+            {
+                result = operand.Value - low.Value;
+            }
+
+            return new Argument(operand.Type, value: result);
+        }
+
+        public static Argument Discount(ExecContext context, params Argument[] args)
+        {
+            AssertArgCount(args, 2);
+
+            var rate = DslEvaluator.Reduce(context, args[0]).AssertNumeric();
+            var operand = DslEvaluator.Reduce(context, args[1]).AssertNumeric();
+
+            var result = 0m;
+
+            if (rate.Value <= 1.0m)
+            {
+                result = (1.0m - rate.Value) * operand.Value;
+            }
+
+            return new Argument(operand.Type, value: result);
+        }
+
+        public static Argument SetCostBasis(ExecContext context, params Argument[] args)
+        {
+            AssertArgCount(args, 1);
+
+            var costBasis = DslEvaluator.Reduce(context, args[0]);
+            costBasis.AssertMoney();
+
+            context.Line.ItemPrice = costBasis.Value;
+
+            return Argument.AsMoney(0m);
+        }
+
+        public static Argument JurisTypeMatch(ExecContext context, params Argument[] args)
+        {
+            AssertArgCount(args, 2);
+
+            var juris = DslEvaluator.Reduce(context, args[0]).AssertSymbol();
+            var value = DslEvaluator.Reduce(context, args[1]);
+
+            if (juris.Id.ToLowerInvariant().Equals(context.JurisdictionType.ToLowerInvariant()))
+            {
+                return value;
+            }
+            else
+            {
+                return Argument.AsDimensionless(0m);
+            }
         }
     }
 }

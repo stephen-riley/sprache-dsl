@@ -8,5 +8,7 @@ namespace SpracheDsl
         public Line Line { get; set; }
 
         public IDictionary<string, ResultValue> ParamBag { get; set; }
+
+        public string JurisdictionType { get; set; }
     }
 }

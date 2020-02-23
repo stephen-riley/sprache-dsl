@@ -25,5 +25,7 @@ namespace SpracheDsl.Types
         Bool = 256,
 
         Dsl = 512,
+
+        Dimensionless = 1024,
     }
 }

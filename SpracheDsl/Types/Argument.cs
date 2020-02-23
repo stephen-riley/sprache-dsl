@@ -15,6 +15,17 @@ namespace SpracheDsl.Types
 
         public FunctionInvocation FuncInvocation { get; private set; }
 
+        public Argument() { }
+
+        public Argument(ArgumentTypes type, string id = null, decimal value = 0m, string dsl = null, FunctionInvocation invocation = null)
+        {
+            Type = type;
+            Id = id;
+            Value = value;
+            FuncInvocation = invocation;
+            Dsl = dsl;
+        }
+
         public static Argument AsVariable(string id)
         {
             return new Argument { Type = Variable, Id = id };
@@ -93,6 +104,11 @@ namespace SpracheDsl.Types
         public static Argument AsDsl(string dsl)
         {
             return new Argument { Type = ArgumentTypes.Dsl, Dsl = dsl };
+        }
+
+        public static Argument AsDimensionless(decimal n)
+        {
+            return new Argument { Type = Dimensionless, Value = n };
         }
 
         public override string ToString()

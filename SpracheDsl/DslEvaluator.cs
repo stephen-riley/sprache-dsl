@@ -17,6 +17,8 @@ namespace SpracheDsl
 
         public IDictionary<string, ResultValue> ParamBag { get; set; }
 
+        public string JurisdictionType { get; set; }
+
         public DslEvaluator()
         {
         }
@@ -25,6 +27,7 @@ namespace SpracheDsl
         {
             Line = context.Line;
             ParamBag = context.ParamBag;
+            JurisdictionType = context.JurisdictionType;
         }
 
         public ResultValue Eval(string dsl, bool forceReparse = false)
@@ -32,7 +35,7 @@ namespace SpracheDsl
             var hash = dsl.GetHashCode();
             EvalInternal(dsl, hash, forceReparse);
 
-            return Reduce(new ExecContext { Line = Line, ParamBag = ParamBag }, DslCache[hash]).ToResultValue();
+            return Reduce(new ExecContext { Line = Line, ParamBag = ParamBag, JurisdictionType = JurisdictionType }, DslCache[hash]).ToResultValue();
         }
 
         public IList<DslAttribute> Attributes(string dsl, bool forceReparse = false)

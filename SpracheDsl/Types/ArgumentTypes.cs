@@ -27,5 +27,7 @@ namespace SpracheDsl.Types
         Dsl = 512,
 
         Dimensionless = 1024,
+
+        Set = 2048,
     }
 }

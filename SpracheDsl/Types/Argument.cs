@@ -1,6 +1,7 @@
 namespace SpracheDsl.Types
 {
     using System;
+    using System.Collections.Generic;
     using static ArgumentTypes;
 
     public class Argument
@@ -15,15 +16,18 @@ namespace SpracheDsl.Types
 
         public FunctionInvocation FuncInvocation { get; private set; }
 
+        public IEnumerable<Argument> Set { get; private set; }
+
         public Argument() { }
 
-        public Argument(ArgumentTypes type, string id = null, decimal value = 0m, string dsl = null, FunctionInvocation invocation = null)
+        public Argument(ArgumentTypes type, string id = null, decimal value = 0m, string dsl = null, FunctionInvocation invocation = null, IEnumerable<Argument> set = null)
         {
             Type = type;
             Id = id;
             Value = value;
             FuncInvocation = invocation;
             Dsl = dsl;
+            Set = set;
         }
 
         public static Argument AsVariable(string id)
@@ -109,6 +113,11 @@ namespace SpracheDsl.Types
         public static Argument AsDimensionless(decimal n)
         {
             return new Argument { Type = Dimensionless, Value = n };
+        }
+
+        public static Argument AsSet(IEnumerable<Argument> elements)
+        {
+            return new Argument { Type = Dimensionless, Set = elements };
         }
 
         public override string ToString()

@@ -51,13 +51,10 @@ namespace SpracheDsl
             if (forceReparse || !DslCache.ContainsKey(hash))
             {
                 var stripped = StripComments(dsl);
+                var fullRule = DslGrammar.FullRule.Parse(stripped);
 
-                var attrs = DslGrammar.AttrList.Parse(stripped);
-                attrs = ReduceAttributes(attrs);
-
-                var invocation = DslGrammar.Rule.Parse(StripAttributes(stripped));
-                DslCache[hash] = Argument.AsFunctionCall(invocation);
-                AttrCache[hash] = attrs.ToList();
+                DslCache[hash] = Argument.AsFunctionCall(fullRule.Invocation);
+                AttrCache[hash] = ReduceAttributes(fullRule.Attributes).ToList();
             }
         }
 

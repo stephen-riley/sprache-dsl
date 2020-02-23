@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using SpracheDsl.Types;
 
@@ -272,17 +273,29 @@ namespace SpracheDsl
         {
             AssertArgCount(args, 2);
 
-            var juris = DslEvaluator.Reduce(context, args[0]).AssertSymbol();
+            var juris = DslEvaluator.Reduce(context, args[0]);
             var value = DslEvaluator.Reduce(context, args[1]);
 
-            if (juris.Id.ToLowerInvariant().Equals(context.JurisdictionType.ToLowerInvariant()))
+            IEnumerable<Argument> jurisSymbols;
+
+            if (juris.IsSymbol())
             {
-                return value;
+                jurisSymbols = new List<Argument> { juris };
             }
             else
             {
-                return Argument.AsDimensionless(0m);
+                jurisSymbols = juris.Set;
             }
+
+            foreach (var j in jurisSymbols)
+            {
+                if (j.Id.ToLowerInvariant().Equals(context.JurisdictionType.ToLowerInvariant()))
+                {
+                    return value;
+                }
+            }
+
+            return Argument.AsDimensionless(0m);
         }
     }
 }

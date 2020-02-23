@@ -39,13 +39,20 @@ namespace SpracheDsl
             from value in Parse.String("INF").Token()
             select Argument.AsNumber(decimal.MaxValue);
 
+        public static Parser<Argument> SET =
+            from openBracket in Parse.Char('[').Token()
+            from args in ArgumentList.Optional()
+            from closeBracket in Parse.Char(']').Token()
+            select Argument.AsSet(args.IsDefined ? args.Get().ToList() : new List<Argument>());
+
         public static Parser<Argument> Atom =
             VAR
             .Or(MONEY)
             .Or(SYMBOL)
             .Or(PERCENT)
             .Or(NUMBER)
-            .Or(INF);
+            .Or(INF)
+            .Or(SET);
 
         public static Parser<Argument> Expression =
             Atom
@@ -65,19 +72,24 @@ namespace SpracheDsl
             select new List<Argument>(args);
 
         public static readonly Parser<FunctionInvocation> Rule =
-            (from invocation in Expression
-             select invocation.FuncInvocation).End();
+            from invocation in Expression
+            select invocation.FuncInvocation;
 
         public static Parser<DslAttribute> Attr =
             from openBracket in Parse.Char('[').Token()
             from id in ID
             from eq in Parse.Char('=').Token()
             from atoms in Atom.DelimitedBy(Comma)
+            from closeBracket in Parse.Char(']').Token()
             select new DslAttribute(id.Id, atoms);
 
         public static Parser<IEnumerable<DslAttribute>> AttrList =
-            from leading in Parse.CharExcept('[').Many()
-            from attrs in Attr.DelimitedBy(Parse.CharExcept('[')).Optional()
+            from attrs in Attr.Token().Many().Optional()
             select attrs.IsDefined ? attrs.Get() : new List<DslAttribute>();
+
+        public static Parser<FullRule> FullRule =
+            from attrs in AttrList
+            from rule in Rule
+            select new FullRule(rule, attrs);
     }
 }

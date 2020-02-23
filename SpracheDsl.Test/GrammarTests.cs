@@ -96,7 +96,6 @@ namespace SpracheDsl.Test
         public void CanParseSimpleAttributeWithSurroundingText()
         {
             var text = @"
-                // some comments
                 [RunBefore=:COUNTY]
                 rate( 6.5%, costbasis() )";
 
@@ -112,7 +111,6 @@ namespace SpracheDsl.Test
         public void CanParseMultipleAttributesWithSurroundingText()
         {
             var text = @"
-                // some comments
                 [RunBefore=:COUNTY]
                 [RunBefore=:CITY]
                 [RunBefore=:STJ]
@@ -124,6 +122,36 @@ namespace SpracheDsl.Test
             Assert.AreEqual("RunBefore", result.First().Name);
             Assert.AreEqual(1, result.First().Values.Count);
             Assert.AreEqual(":COUNTY", result.First().Values[0]);
+        }
+
+        [TestMethod]
+        public void CanParseFullRule()
+        {
+            var text = @"
+                [RunBefore = :COUNTY]
+                [RunBefore=:CITY]
+                [RunBefore=:STJ]
+                rate( 6.5%, costbasis() )";
+
+            var interpreter = new DslEvaluator();
+            var result = DslGrammar.FullRule.Parse(text);
+            Assert.AreEqual(3, result.Attributes.ToList().Count);
+            Assert.AreEqual("RunBefore", result.Attributes.First().Name);
+            Assert.AreEqual(1, result.Attributes.First().Values.Count);
+            Assert.AreEqual(":COUNTY", result.Attributes.First().Values[0]);
+        }
+
+        [TestMethod]
+        public void CanParseDslAttribute()
+        {
+            var text = @"
+                [RunBefore=:COUNTY]";
+
+            var interpreter = new DslEvaluator();
+            var result = DslGrammar.Attr.Parse(text);
+            Assert.AreEqual("RunBefore", result.Name);
+            Assert.AreEqual(1, result.Values.Count);
+            Assert.AreEqual(":COUNTY", result.Values[0]);
         }
     }
 }

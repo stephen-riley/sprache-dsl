@@ -7,8 +7,22 @@ namespace SpracheDsl
 {
     public class DslGrammar
     {
+        public static Parser<Argument> TRUE =
+            from trueLiteral in Parse.String("true").Token()
+            select Argument.AsBoolean(true);
+
+        public static Parser<Argument> FALSE =
+            from trueLiteral in Parse.String("false").Token()
+            select Argument.AsBoolean(false);
+
+        public static Parser<Argument> STRING =
+            from openQuote in Parse.Char('\'')
+            from str in Parse.Regex(@"[^']*")
+            from closeQuote in Parse.Char('\'')
+            select Argument.AsString(str);
+
         public static Parser<Argument> ID =
-            from id in Parse.Regex(@"[A-Za-z_\-0-9]+").Token().Text()
+            from id in Parse.Regex(@"[A-Za-z_\-0-9\.]+").Token().Text()
             select Argument.AsIdentifier(id);
 
         public static Parser<Argument> SYMBOL =
@@ -46,11 +60,14 @@ namespace SpracheDsl
             select Argument.AsSet(args.IsDefined ? args.Get().ToList() : new List<Argument>());
 
         public static Parser<Argument> Atom =
-            VAR
+            TRUE
+            .Or(FALSE)
+            .Or(VAR)
             .Or(MONEY)
             .Or(SYMBOL)
             .Or(PERCENT)
             .Or(NUMBER)
+            .Or(STRING)
             .Or(INF)
             .Or(SET);
 
@@ -91,5 +108,8 @@ namespace SpracheDsl
             from attrs in AttrList
             from rule in Rule
             select new FullRule(rule, attrs);
+
+        public static Parser<IEnumerable<FullRule>> CompoundRule =
+            FullRule.AtLeastOnce();
     }
 }

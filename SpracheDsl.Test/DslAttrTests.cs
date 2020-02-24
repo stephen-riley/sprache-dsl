@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace SpracheDsl.Test
 {
@@ -17,7 +18,7 @@ namespace SpracheDsl.Test
                 ";
 
             var interpreter = new DslEvaluator();
-            var result = interpreter.Attributes(dsl);
+            var result = interpreter.Attributes(dsl).First();
             Assert.AreEqual(1, result.Count);
             Assert.AreEqual("RunBefore", result[0].Name);
             Assert.AreEqual(3, result[0].Values.Count);
@@ -35,7 +36,7 @@ namespace SpracheDsl.Test
                 ";
 
             var interpreter = new DslEvaluator();
-            var result = interpreter.Attributes(dsl);
+            var result = interpreter.Attributes(dsl).First();
             Assert.IsNotNull(result);
             Assert.AreEqual(0, result.Count);
         }

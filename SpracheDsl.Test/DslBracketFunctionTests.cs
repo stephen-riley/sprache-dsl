@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using SpracheDsl;
+using System.Linq;
 
 namespace SpracheDsl.Test
 {
@@ -66,38 +67,38 @@ namespace SpracheDsl.Test
             var evaluator = new DslEvaluator() { Line = line };
             var result = evaluator.Eval(MarylandBracketDsl);
 
-            Assert.AreEqual(ResultTypes.Money, result.Unit);
-            Assert.AreEqual(0.12m + 0.03m, result.Value);
+            Assert.AreEqual(ResultTypes.Money, result.First().Unit);
+            Assert.AreEqual(0.12m + 0.03m, result.First().Value);
 
             evaluator.Line.ItemPrice = 100.00m;
             result = evaluator.Eval(MarylandBracketDsl);
-            Assert.AreEqual(ResultTypes.Money, result.Unit);
-            Assert.AreEqual(6.00m, result.Value);
+            Assert.AreEqual(ResultTypes.Money, result.First().Unit);
+            Assert.AreEqual(6.00m, result.First().Value);
 
             evaluator.Line.ItemPrice = 0.50m;
             result = evaluator.Eval(MarylandBracketDsl);
-            Assert.AreEqual(ResultTypes.Money, result.Unit);
-            Assert.AreEqual(0.03m, result.Value);
+            Assert.AreEqual(ResultTypes.Money, result.First().Unit);
+            Assert.AreEqual(0.03m, result.First().Value);
 
             evaluator.Line.ItemPrice = 0.15m;
             result = evaluator.Eval(MarylandBracketDsl);
-            Assert.AreEqual(ResultTypes.Money, result.Unit);
-            Assert.AreEqual(0.00m, result.Value);
+            Assert.AreEqual(ResultTypes.Money, result.First().Unit);
+            Assert.AreEqual(0.00m, result.First().Value);
 
             evaluator.Line.ItemPrice = 1.15m;
             result = evaluator.Eval(MarylandBracketDsl);
-            Assert.AreEqual(ResultTypes.Money, result.Unit);
-            Assert.AreEqual(0.06m + 0.01m, result.Value);
+            Assert.AreEqual(ResultTypes.Money, result.First().Unit);
+            Assert.AreEqual(0.06m + 0.01m, result.First().Value);
 
             evaluator.Line.ItemPrice = 0.20m;
             result = evaluator.Eval(MarylandBracketDsl);
-            Assert.AreEqual(ResultTypes.Money, result.Unit);
-            Assert.AreEqual(0.01m, result.Value);
+            Assert.AreEqual(ResultTypes.Money, result.First().Unit);
+            Assert.AreEqual(0.01m, result.First().Value);
 
             evaluator.Line.ItemPrice = 0.00m;
             result = evaluator.Eval(MarylandBracketDsl);
-            Assert.AreEqual(ResultTypes.Money, result.Unit);
-            Assert.AreEqual(0.00m, result.Value);
+            Assert.AreEqual(ResultTypes.Money, result.First().Unit);
+            Assert.AreEqual(0.00m, result.First().Value);
         }
 
         [TestMethod]
@@ -114,7 +115,7 @@ namespace SpracheDsl.Test
             };
 
             var result = evaluator.Eval("rate( defaultrate( :G ), costbasis() )");
-            Assert.AreEqual(0.06m + 0.01m, result.Value);
+            Assert.AreEqual(0.06m + 0.01m, result.First().Value);
         }
 
         [TestMethod]
@@ -124,38 +125,38 @@ namespace SpracheDsl.Test
             var evaluator = new DslEvaluator() { Line = line };
             var result = evaluator.Eval(FloridaBracketDsl);
 
-            Assert.AreEqual(ResultTypes.Money, result.Unit);
-            Assert.AreEqual(0.15m, result.Value);
+            Assert.AreEqual(ResultTypes.Money, result.First().Unit);
+            Assert.AreEqual(0.15m, result.First().Value);
 
             evaluator.Line.ItemPrice = 100.00m;
             result = evaluator.Eval(FloridaBracketDsl);
-            Assert.AreEqual(ResultTypes.Money, result.Unit);
-            Assert.AreEqual(6.00m, result.Value);
+            Assert.AreEqual(ResultTypes.Money, result.First().Unit);
+            Assert.AreEqual(6.00m, result.First().Value);
 
             evaluator.Line.ItemPrice = 0.50m;
             result = evaluator.Eval(FloridaBracketDsl);
-            Assert.AreEqual(ResultTypes.Money, result.Unit);
-            Assert.AreEqual(0.03m, result.Value);
+            Assert.AreEqual(ResultTypes.Money, result.First().Unit);
+            Assert.AreEqual(0.03m, result.First().Value);
 
             evaluator.Line.ItemPrice = 0.15m;
             result = evaluator.Eval(FloridaBracketDsl);
-            Assert.AreEqual(ResultTypes.Money, result.Unit);
-            Assert.AreEqual(0.01m, result.Value);
+            Assert.AreEqual(ResultTypes.Money, result.First().Unit);
+            Assert.AreEqual(0.01m, result.First().Value);
 
             evaluator.Line.ItemPrice = 1.15m;
             result = evaluator.Eval(FloridaBracketDsl);
-            Assert.AreEqual(ResultTypes.Money, result.Unit);
-            Assert.AreEqual(0.07m, result.Value);
+            Assert.AreEqual(ResultTypes.Money, result.First().Unit);
+            Assert.AreEqual(0.07m, result.First().Value);
 
             evaluator.Line.ItemPrice = 0.20m;
             result = evaluator.Eval(FloridaBracketDsl);
-            Assert.AreEqual(ResultTypes.Money, result.Unit);
-            Assert.AreEqual(0.02m, result.Value);
+            Assert.AreEqual(ResultTypes.Money, result.First().Unit);
+            Assert.AreEqual(0.02m, result.First().Value);
 
             evaluator.Line.ItemPrice = 0.00m;
             result = evaluator.Eval(FloridaBracketDsl);
-            Assert.AreEqual(ResultTypes.Money, result.Unit);
-            Assert.AreEqual(0.00m, result.Value);
+            Assert.AreEqual(ResultTypes.Money, result.First().Unit);
+            Assert.AreEqual(0.00m, result.First().Value);
         }
 
         [TestMethod]
@@ -172,7 +173,7 @@ namespace SpracheDsl.Test
             };
 
             var result = evaluator.Eval("rate( defaultrate( :G ), costbasis() )");
-            Assert.AreEqual(0.07m, result.Value);
+            Assert.AreEqual(0.07m, result.First().Value);
         }
     }
 }

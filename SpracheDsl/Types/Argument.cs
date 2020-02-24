@@ -120,6 +120,11 @@ namespace SpracheDsl.Types
             return new Argument { Type = Dimensionless, Set = elements };
         }
 
+        public static Argument AsString(string str)
+        {
+            return new Argument { Type = Str, Id = str };
+        }
+
         public override string ToString()
         {
             return Type switch
@@ -129,6 +134,7 @@ namespace SpracheDsl.Types
                 Variable => $"@{Id}",
                 Number => Value.ToString(),
                 Money => $"${Value}",
+                Str => Id,
                 _ => throw new ArgumentException($"can't convert type {Type.ToString()} to string")
             };
         }

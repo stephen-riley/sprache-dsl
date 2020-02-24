@@ -39,6 +39,7 @@ namespace SpracheDsl.Types
         public static bool IsVariable(this Argument arg) => arg.Type == Variable;
         public static bool IsSymbol(this Argument arg) => arg.Type == Symbol;
         public static bool IsFuncInvocation(this Argument arg) => arg.Type == FunctionCall;
+        public static bool IsBoolean(this Argument arg) => arg.Type == Bool;
 
         public static ResultValue ToResultValue(this Argument arg)
         {

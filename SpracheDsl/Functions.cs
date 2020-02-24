@@ -47,18 +47,38 @@ namespace SpracheDsl
             AssertArgCount(args, 2);
 
             var rate = DslEvaluator.Reduce(context, args[0]);
+            var costBasis = DslEvaluator.Reduce(context, args[1]);
+            var calcedValue = rate.Value * costBasis.Value;
 
             if (rate.IsMoney())
             {
-                return rate;
+                if (args[0].Type == ArgumentTypes.FunctionCall)
+                {
+                    return rate;
+                }
+                else
+                {
+                    return new Argument(type: costBasis.Type, value: calcedValue);
+                }
             }
 
-            var costBasis = DslEvaluator.Reduce(context, args[1]);
+            if (rate.IsBoolean())
+            {
+                if (rate.Value == 0m)
+                {
+                    return Argument.AsMoney(0m);
+                }
+                else
+                {
+                    return costBasis;
+                }
+            }
 
+            // rate should be a percentage if we're here
             rate.AssertPercent();
             costBasis.AssertMoney();
 
-            return Argument.AsMoney(rate.Value * costBasis.Value);
+            return Argument.AsMoney(calcedValue);
         }
 
         public static Argument CostBasis(ExecContext context, params Argument[] args)
@@ -112,7 +132,7 @@ namespace SpracheDsl
             // ought to filter by the *actual* unit basis, but the tests don't demand that, so...
             // ignore the args
 
-            return Argument.AsNumber(context.Line.UnitOfMeasure.Units);
+            return Argument.AsNumber(context.Line.UnitOfMeasure.Units * context.Line.Quantity);
         }
 
         public static Argument UnitBand(ExecContext context, params Argument[] args)

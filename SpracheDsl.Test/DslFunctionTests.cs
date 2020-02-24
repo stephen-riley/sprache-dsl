@@ -1,4 +1,6 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SpracheDsl.Types;
 
 namespace SpracheDsl.Test
@@ -19,13 +21,13 @@ namespace SpracheDsl.Test
 
             var interpreter = new DslEvaluator() { Line = line };
             interpreter.Line.ItemPrice = 150.00m;
-            Assert.AreEqual(ResultValue.Money(150.00m), interpreter.Eval(dsl));
+            Assert.AreEqual(ResultValue.Money(150.00m), interpreter.Eval(dsl).First());
 
             interpreter.Line.ItemPrice = 50.00m;
-            Assert.AreEqual(ResultValue.Money(0.00m), interpreter.Eval(dsl));
+            Assert.AreEqual(ResultValue.Money(0.00m), interpreter.Eval(dsl).First());
 
             interpreter.Line.ItemPrice = 250.00m;
-            Assert.AreEqual(ResultValue.Money(200.00m), interpreter.Eval(dsl));
+            Assert.AreEqual(ResultValue.Money(200.00m), interpreter.Eval(dsl).First());
         }
 
         [TestMethod]
@@ -36,25 +38,25 @@ namespace SpracheDsl.Test
             var interpreter = new DslEvaluator() { Line = line };
 
             interpreter.Line.ItemPrice = 150.00m;
-            Assert.AreEqual(ResultValue.Money(50.00m), interpreter.Eval(dsl));
+            Assert.AreEqual(ResultValue.Money(50.00m), interpreter.Eval(dsl).First());
 
             interpreter.Line.ItemPrice = 50.00m;
-            Assert.AreEqual(ResultValue.Money(0.00m), interpreter.Eval(dsl));
+            Assert.AreEqual(ResultValue.Money(0.00m), interpreter.Eval(dsl).First());
 
             interpreter.Line.ItemPrice = 250.00m;
-            Assert.AreEqual(ResultValue.Money(100.00m), interpreter.Eval(dsl));
+            Assert.AreEqual(ResultValue.Money(100.00m), interpreter.Eval(dsl).First());
 
             // fencepost
             interpreter.Line.ItemPrice = 0.00m;
-            Assert.AreEqual(ResultValue.Money(0.00m), interpreter.Eval(dsl));
+            Assert.AreEqual(ResultValue.Money(0.00m), interpreter.Eval(dsl).First());
 
             // fencepost
             interpreter.Line.ItemPrice = 100.00m;
-            Assert.AreEqual(ResultValue.Money(0.00m), interpreter.Eval(dsl));
+            Assert.AreEqual(ResultValue.Money(0.00m), interpreter.Eval(dsl).First());
 
             // fencepost
             interpreter.Line.ItemPrice = 200.00m;
-            Assert.AreEqual(ResultValue.Money(100.00m), interpreter.Eval(dsl));
+            Assert.AreEqual(ResultValue.Money(100.00m), interpreter.Eval(dsl).First());
         }
 
         [TestMethod]
@@ -63,18 +65,18 @@ namespace SpracheDsl.Test
             var dsl = "juristypematch( :STATE, $1.00 )";
 
             var interpreter = new DslEvaluator() { JurisdictionType = "STATE" };
-            Assert.AreEqual(ResultValue.Money(1.00m), interpreter.Eval(dsl));
+            Assert.AreEqual(ResultValue.Money(1.00m), interpreter.Eval(dsl).First());
 
             interpreter.JurisdictionType = "COUNTY";
-            Assert.AreEqual(ResultValue.Dimensionless(0.00m), interpreter.Eval(dsl));
+            Assert.AreEqual(ResultValue.Dimensionless(0.00m), interpreter.Eval(dsl).First());
 
             dsl = "juristypematch( [ :COUNTY, :CITY ], $1.00 )";
             interpreter.JurisdictionType = "COUNTY";
-            Assert.AreEqual(ResultValue.Money(1.00m), interpreter.Eval(dsl));
+            Assert.AreEqual(ResultValue.Money(1.00m), interpreter.Eval(dsl).First());
 
             // fencepost
             interpreter.JurisdictionType = "STATE";
-            Assert.AreEqual(ResultValue.Dimensionless(0.00m), interpreter.Eval(dsl));
+            Assert.AreEqual(ResultValue.Dimensionless(0.00m), interpreter.Eval(dsl).First());
         }
 
         [TestMethod]
@@ -83,16 +85,16 @@ namespace SpracheDsl.Test
             var interpreter = new DslEvaluator();
 
             var dsl = "discount( 20%, $1.00 )";
-            Assert.AreEqual(ResultValue.Money(0.80m), interpreter.Eval(dsl));
+            Assert.AreEqual(ResultValue.Money(0.80m), interpreter.Eval(dsl).First());
 
             dsl = "discount( 150%, $1.00 )";
-            Assert.AreEqual(ResultValue.Money(0.00m), interpreter.Eval(dsl));
+            Assert.AreEqual(ResultValue.Money(0.00m), interpreter.Eval(dsl).First());
 
             dsl = "discount( $0.20, $1.00 )";
-            Assert.AreEqual(ResultValue.Money(0.80m), interpreter.Eval(dsl));
+            Assert.AreEqual(ResultValue.Money(0.80m), interpreter.Eval(dsl).First());
 
             dsl = "discount( $1.20, $1.00 )";
-            Assert.AreEqual(ResultValue.Money(0.00m), interpreter.Eval(dsl));
+            Assert.AreEqual(ResultValue.Money(0.00m), interpreter.Eval(dsl).First());
         }
 
         [TestMethod]
@@ -102,7 +104,7 @@ namespace SpracheDsl.Test
 
             interpreter.Line.ItemPrice = 0.0m;
             interpreter.Eval("setcostbasis( $1.00 )");
-            var result = interpreter.Eval("costbasis()");
+            var result = interpreter.Eval("costbasis()").First();
             Assert.AreEqual(ResultValue.Money(1.00m), result);
         }
     }

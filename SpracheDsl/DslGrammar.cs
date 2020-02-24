@@ -71,14 +71,17 @@ namespace SpracheDsl
             .Or(INF)
             .Or(SET);
 
+        public static Parser<Argument> FunctionCall =
+            from id in ID
+            from openParen in Parse.Char('(').Token()
+            from args in ArgumentList.Optional()
+            from closeParen in Parse.Char(')').Token()
+            select Argument.AsFunctionCall(new FunctionInvocation { Name = id.Id, Args = args.IsDefined ? args.Get().ToList() : new List<Argument>() });
+
         public static Parser<Argument> Expression =
             Atom
             .Or(
-                from id in ID
-                from openParen in Parse.Char('(').Token()
-                from args in ArgumentList.Optional()
-                from closeParen in Parse.Char(')').Token()
-                select Argument.AsFunctionCall(new FunctionInvocation { Name = id.Id, Args = args.IsDefined ? args.Get().ToList() : new List<Argument>() })
+                FunctionCall
             );
 
         public static Parser<char> Comma =
